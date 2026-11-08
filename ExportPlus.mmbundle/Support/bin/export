@@ -1,0 +1,84 @@
+#!/usr/bin/env swift
+
+import Foundation
+
+// Note: Shared swift functionality (like a GUI) could be put in a compiled package and the default PATH could then allow access to it via 'import'.
+// While debugging, this makes it possible to interrupt with Ctrl-C
+// signal(SIGINT) { _ in exit(1) }
+
+var exportFolder: String?
+
+let env = ProcessInfo.processInfo.environment
+let identifier = env["MM_APP_IDENTIFIER"] ?? "com.freron.MailMate"
+if let defaults = UserDefaults(suiteName: identifier) {
+	exportFolder = defaults.string(forKey: "MmExportPath")
+	if exportFolder == nil {
+		if let supportFolder = env["MM_BUNDLE_SUPPORT"] {
+			let task = Process()
+			task.launchPath = supportFolder + "/bin/select_export_folder"
+			task.launch()
+			task.waitUntilExit()
+			exportFolder = defaults.string(forKey: "MmExportPath")
+		}
+	}
+}
+
+if exportFolder == nil {
+    FileHandle.standardError.write("Error: Export folder setting unavailble\n".data(using: .utf8)!)
+	exit(1)
+
+	// I think it's better behavior to not export at all when this happens. Keeping the code for now.
+	// if let homeFolder = env["HOME"] {
+	// 	exportFolder = homeFolder + "/Desktop/MailMate Export"
+	// }
+	//
+	// if exportFolder == nil {
+	// 	exit(1)
+	// }
+}
+
+do {
+	if let inputStream = InputStream(fileAtPath: "/dev/stdin") {
+		inputStream.open()
+		let array = try JSONSerialization.jsonObject(with: inputStream, options: []) as! [[String: Any]]
+		for dict in array {
+			let filename = dict["preferredFilename"] as! String
+			let relativePath = dict["relativePath"] as! String
+			let files = dict["files"] as! [[String: Any]]
+			let filePath = files[0]["filePath"] as! String
+			let destFolderPath = exportFolder! + "/" + relativePath
+
+			let fileManager = FileManager.default
+			try fileManager.createDirectory(atPath: destFolderPath, withIntermediateDirectories: true)
+
+			var filenameWithCount = filename
+			var count = 1
+
+			while true {
+				let destPath = destFolderPath + "/" + filenameWithCount + ".eml"
+				if !fileManager.fileExists(atPath: destPath) {
+					// File does not exist -- save it
+					try fileManager.moveItem(atPath: filePath, toPath: destPath)
+					break
+				}
+				else if !fileManager.contentsEqual(atPath: filePath, andPath: destPath) {
+					// File already exists but not with the same content (create new name)
+					count += 1
+					filenameWithCount = filename + "-" + String(count)
+				}
+				else {
+					// File already exists with the same content
+					break
+				}
+			}
+		}
+	}
+}
+catch {
+	// FIXME: Should have a system to easily report this to the user.
+    FileHandle.standardError.write(("Error: Failed to export one or more emails (\(error))\n").data(using: .utf8)!)
+    exit(1)
+}
+
+// Note: The old MmExportPattern has been replaced by environment variables in the mmCommand. Could possibly allow preferences variables to affect that pattern though... Something like:
+// environment   = 'relativePath=${MmExportBundleRelativePathPattern}\npreferredFilename=${MmExportBundleFilenamePattern}';

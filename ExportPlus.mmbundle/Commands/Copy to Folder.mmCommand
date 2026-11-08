@@ -1,0 +1,9 @@
+{
+	name          = 'Copy to Folder';
+	input         = json;
+	executionMode = multipleMessages;
+	inputFilesPattern = "^$";
+	environment   = 'relativePath=${#source.#name/\\///g}/${#source.path.noinbox/\\///g}\npreferredFilename=${#date-received.#local.day}-${#date-received.#local.time/://g}';
+	script       = '#!/bin/bash\n"${MM_BUNDLE_SUPPORT}/bin/export"';
+	uuid          = 'E285499B-C56E-43FA-A36A-2FF225F68CD3';
+}

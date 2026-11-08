@@ -1,0 +1,24 @@
+{
+	name          = 'Copy to mbox';
+	input         = "raw";
+	environment   = 'MM_DATE=${#date-received}\nMM_FILE_PATH=${#source.#name/\\///g}/${#source.path.noinbox/\\///g}.mbox\n';
+	script       = '#!/bin/bash
+MM_DATE=`LANG=en_US date -j -f "%Y-%m-%d %H:%M:%S" "${MM_DATE}" "+%a %b %e %H:%M:%S %Y"`
+
+EXPORT_PATH=`defaults read com.freron.MailMate MmExportPath 2>/dev/null`
+if [ -z "${EXPORT_PATH}" ]; then
+	EXPORT_PATH=`"${MM_BUNDLE_SUPPORT}/bin/select_export_folder"`
+fi
+if [ -z "${EXPORT_PATH}" ]; then
+   EXPORT_PATH="${HOME}/Desktop/MailMate Export"
+fi
+
+if [ -n "${EXPORT_PATH}" ]; then
+	MM_FILE_PATH="${EXPORT_PATH}/${MM_FILE_PATH}"
+	MM_FOLDER_PATH=$(dirname "${MM_FILE_PATH}")
+	mkdir -p "${MM_FOLDER_PATH}"
+	"${MM_BUNDLE_SUPPORT}/bin/formail" | sed "1 s/^\\(From [^ ]* \\).*/\\1${MM_DATE}/" >> "${MM_FILE_PATH}"
+fi
+';
+	uuid          = 'DE2F4DD1-C8C7-430A-BA79-E77DC12FFB59';
+}

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+EXPORT_PATH=`defaults read com.freron.MailMate MmExportPath 2>/dev/null`
+if [ ! -d "${EXPORT_PATH}" ]; then
+  EXPORT_PATH="${HOME}/Desktop/MailMate Export"
+fi
+if [ ! -d "${EXPORT_PATH}" ]; then
+  EXPORT_PATH="${HOME}/Desktop"
+fi
+
+osascript <<END
+tell application "System Events"
+	activate
+	try
+		set theFolder to (choose folder with prompt "Please create/choose an export folder" default location (POSIX file "${EXPORT_PATH}"))
+		if theFolder is not false then
+			do shell script "defaults write com.freron.MailMate MmExportPath -string '" & posix path of theFolder & "'"
+			return posix path of theFolder
+		end if
+	end try
+	return ""
+end tell
+END

@@ -1,0 +1,5 @@
+{
+	name          = 'Select Export Folder';
+	script       = '#!/bin/bash\n"${MM_BUNDLE_SUPPORT}/bin/select_export_folder"';
+	uuid          = '25581334-F9EA-4087-9359-92C7CE9D07A0';
+}
