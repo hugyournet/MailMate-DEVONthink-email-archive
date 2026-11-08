@@ -3,7 +3,7 @@
 	input         = json;
 	executionMode = multipleMessages;
 	inputFilesPattern = "^$";
-	environment   = 'relativePath=${#source.#name/\\///g}/${#source.path.noinbox/\\///g}\npreferredFilename=${#date-received.#local.day}-${#date-received.#local.time/://g}';
+	environment   = 'relativePath=${#source.#name/\\///g}/${#source.path.noinbox}\npreferredFilename=${#date-received.#local.day}-${#date-received.#local.time/://g}';
 	script       = '#!/bin/bash\n"${MM_BUNDLE_SUPPORT}/bin/export"';
-	uuid          = 'E285499B-C56E-43FA-A36A-2FF225F68CD3';
+	uuid          = 'A6D91162-C2C9-44A9-8026-5059364FF4BB';
 }

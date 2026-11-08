@@ -1,6 +1,6 @@
 {	"contactEmailRot13" = "zz-ohaqyrf@sereba.pbz";
 	contactName = "Benny Kjær Nielsen";
-	description = "Export functionality.";
-	name = "Export";
-	uuid = "27C9BA0A-C5A8-4630-9235-F70B6A2C4C21";
+	description = "[Fixed] Export functionality.";
+	name = "ExportPlus";
+	uuid = "EA41A2D8-AC02-4019-B4F1-EFB63EE1804A";
 }
