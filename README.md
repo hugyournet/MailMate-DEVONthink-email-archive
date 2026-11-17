@@ -72,4 +72,4 @@ This Smart Rule will find any **indexed email** in the *Email* database:
 
 ## 3. Set up a shortcut
 
-There are many ways to do this, I like Keyboard Maestro so it can delete the emails after triggering the MailMate **Commands** > **Export** > **Copy to Folder** menu item. This gets me "one keystroke email archiving".
+There are many ways to do this, I like Keyboard Maestro so it can delete the emails after triggering the MailMate **Commands** > **ExportPlus** > **Copy to Folder** menu item. This gets me "one keystroke email archiving".
